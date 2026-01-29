@@ -3,14 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/adjedjm/NetBeansProjects/Interent-Subscriptions/PJ_internet_subscription/src/pj_internet_subscription/C_internet_subscription.java</file>
-            <file>file:/home/adjedjm/NetBeansProjects/Interent-Subscriptions/PJ_internet_subscription/src/pj_internet_subscription/views/V_Main.java</file>
-            <file>file:/home/adjedjm/NetBeansProjects/Interent-Subscriptions/PJ_internet_subscription/src/pj_internet_subscription/views/V_Subscription.java</file>
-            <file>file:/home/adjedjm/NetBeansProjects/Interent-Subscriptions/PJ_internet_subscription/src/pj_internet_subscription/views/V_SubscriptionDetail.java</file>
-            <file>file:/home/adjedjm/NetBeansProjects/Interent-Subscriptions/PJ_internet_subscription/src/pj_internet_subscription/model/M_Subscription.java</file>
-            <file>file:/home/adjedjm/NetBeansProjects/Interent-Subscriptions/PJ_internet_subscription/src/pj_internet_subscription/model/M_User.java</file>
-            <file>file:/home/adjedjm/NetBeansProjects/Interent-Subscriptions/PJ_internet_subscription/src/pj_internet_subscription/model/M_Outlet.java</file>
-            <file>file:/home/adjedjm/NetBeansProjects/Interent-Subscriptions/PJ_internet_subscription/src/pj_internet_subscription/model/M_Method.java</file>
+            <file>file:/home/adjedjm/NetBeansProjects/Internet-Subscription/PJ_internet_subscription/src/pj_internet_subscription/C_internet_subscription.java</file>
+            <file>file:/home/adjedjm/NetBeansProjects/Internet-Subscription/PJ_internet_subscription/src/pj_internet_subscription/views/V_SubscriptionDetail.java</file>
         </group>
     </open-files>
 </project-private>

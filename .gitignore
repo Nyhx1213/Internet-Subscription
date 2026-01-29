@@ -24,5 +24,4 @@ hs_err_pid*
 replay_pid*
 /PJ_internet_subscription/build/
 /PJ_internet_subscription/dist/
-/PJ_internet_subscription/src/pj_internet_subscription/Db_mariadb.java
 /PJ_internet_subscription/src/pj_internet_subscription/Cl_Connexion.java
