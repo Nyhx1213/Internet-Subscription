@@ -127,6 +127,7 @@ public class V_Main extends javax.swing.JFrame {
     private void initComponents() {
 
         op_error = new javax.swing.JOptionPane();
+        jLabel1 = new javax.swing.JLabel();
         tf_email = new javax.swing.JTextField();
         lb_connection = new javax.swing.JLabel();
         tf_password = new javax.swing.JTextField();
@@ -146,6 +147,8 @@ public class V_Main extends javax.swing.JFrame {
         mn_management = new javax.swing.JMenu();
         mi_subscriptions = new javax.swing.JMenuItem();
         mi_accommodations = new javax.swing.JMenuItem();
+
+        jLabel1.setText("jLabel1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -196,6 +199,11 @@ public class V_Main extends javax.swing.JFrame {
 
         mi_rooms.setText("Rooms");
         mi_rooms.setName("mi_rooms"); // NOI18N
+        mi_rooms.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mi_roomsActionPerformed(evt);
+            }
+        });
         mn_parameters.add(mi_rooms);
 
         mi_users.setText("Users");
@@ -255,7 +263,7 @@ public class V_Main extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(289, 289, 289)
                 .addComponent(lb_connection)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(41, 278, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(bt_connect)
@@ -320,6 +328,14 @@ public class V_Main extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_bt_connectActionPerformed
 
+    private void mi_roomsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mi_roomsActionPerformed
+        try {
+            controller.roomPage();
+        } catch (SQLException ex) {
+            System.getLogger(V_Main.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }//GEN-LAST:event_mi_roomsActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -347,6 +363,7 @@ public class V_Main extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bt_connect;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel lb_connection;
     private javax.swing.JLabel lb_email;
     private javax.swing.JLabel lb_password;

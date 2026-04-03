@@ -58,9 +58,15 @@ public class V_Subscription extends javax.swing.JDialog {
         this.setVisible(true);
     }
     
-        public void userInformation(){
+    public void subscriptionInfo(){
         if (tb_internetSub.getSelectedRow()!=-1){
              selectedSubscription = subscriptionList.get(dm_tb_internetSub.getValueAt(tb_internetSub.getSelectedRow(), 0));
+        }
+    }
+    
+    public void errorSelection(String errorMessage){
+        if (tb_internetSub.getSelectedRow() == -1){
+            op_Error.showMessageDialog(this, errorMessage);
         }
     }
     
@@ -226,10 +232,8 @@ public class V_Subscription extends javax.swing.JDialog {
     }//GEN-LAST:event_bt_backActionPerformed
 
     private void bt_detailsSubActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_detailsSubActionPerformed
-        userInformation();
-        if (tb_internetSub.getSelectedRow() == -1){
-            op_Error.showMessageDialog(this, "Please select a user.");
-        }
+        subscriptionInfo();
+        errorSelection("Please select a user.");
         try {
             selectedSubscription.toString();
             controller.subscriptionCrud("detail", selectedSubscription);

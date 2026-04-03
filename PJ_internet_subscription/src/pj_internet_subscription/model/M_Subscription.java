@@ -282,7 +282,7 @@ public class M_Subscription {
             subscription = new M_Subscription(db, key, id_user, login, first_name, last_name, password, comment, code_outlet, date_begin, date_end, created_at, updated_at);
             subscriptionList.put(key, subscription);   
             
-            System.out.println(id_user);
+            //System.out.println(id_user);
         }
         return subscriptionList;
     }

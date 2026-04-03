@@ -4,6 +4,11 @@
   <NonVisualComponents>
     <Component class="javax.swing.JOptionPane" name="op_error">
     </Component>
+    <Component class="javax.swing.JLabel" name="jLabel1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="jLabel1"/>
+      </Properties>
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="mb_menu">
       <Properties>
         <Property name="name" type="java.lang.String" value="mb_menu" noResource="true"/>
@@ -44,6 +49,9 @@
                 <Property name="text" type="java.lang.String" value="Rooms"/>
                 <Property name="name" type="java.lang.String" value="mi_rooms" noResource="true"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mi_roomsActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mi_users">
               <Properties>
@@ -142,7 +150,7 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="289" max="-2" attributes="0"/>
               <Component id="lb_connection" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace min="41" pref="278" max="32767" attributes="0"/>
           </Group>
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace max="32767" attributes="0"/>
