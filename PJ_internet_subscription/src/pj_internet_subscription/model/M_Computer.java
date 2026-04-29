@@ -63,12 +63,12 @@ public class M_Computer {
         res.close();
     }
 
-    public M_Computer(Db_mariadb db, int id) throws SQLException {
+    public M_Computer(Db_mariadb db, int idSubscription) throws SQLException {
         this.db = db;
         this.id = id;
         
         String sql;
-        sql = "SELECT * FROM mcd_computers WHERE id="+id+" ";
+        sql = "SELECT * FROM mcd_computers WHERE id_subscription="+idSubscription+" ";
         
         ResultSet res = db.sqlSelect(sql);
         res.first();

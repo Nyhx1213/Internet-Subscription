@@ -4,6 +4,11 @@
  */
 package pj_internet_subscription.views;
 
+import java.awt.event.ItemEvent;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import javax.swing.table.DefaultTableModel;
 import pj_internet_subscription.C_internet_subscription;
@@ -30,12 +35,23 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
     /**
      * Creates new form V_CRUD
      */
+    private C_internet_subscription controller;
     private int indexRoom;
     private int currentOutletIndex;
     private DefaultTableModel dm_tb_products, dm_tb_payments;
     private LinkedHashMap<Integer, M_Product> productList;
     private LinkedHashMap<Integer, M_Payment> paymentList;
     private LinkedHashMap<Integer, M_Method> paymentMethodList;
+    private int subscriptionId;
+    private M_Subscription subscription;
+    
+    public void updateOutlet(LinkedHashMap<String, M_Outlet> outletList){
+        cb_outlet.removeAllItems();
+        for (String code : outletList.keySet()) {
+            M_Outlet outletverification = outletList.get(code);
+                cb_outlet.addItem(outletverification.getCode());
+                }
+            }
     
     public void empty(){
         cb_outlet.removeAllItems();
@@ -68,8 +84,8 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
             case "detail" : 
                 tf_userFirstName.setEditable(false);
                 tf_userLastName.setEditable(false);
-                tf_beginDate.setEditable(false);
-                tf_endDate.setEditable(false);
+                dt_beginDate.setEnabled(false);
+                dt_endDate.setEnabled(false);
                 tf_boxLogin.setEditable(false);
                 tf_boxPassword.setEditable(false);
                 ta_comment.setEditable(false);
@@ -77,19 +93,21 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
                 cb_outlet.setEnabled(false);
                 tf_userEmail.setEditable(false);
                 bt_products.setText("Details");
+                cb_active.setEnabled(false);
                 break;
             case "modify" : 
                 tf_userFirstName.setEditable(true);
                 tf_userLastName.setEditable(true);
-                tf_beginDate.setEditable(true);
-                tf_endDate.setEditable(true);
+                dt_beginDate.setEnabled(true);
+                dt_endDate.setEnabled(true);
                 tf_boxLogin.setEditable(true);
-                tf_boxPassword.setEditable(true);
+                tf_boxPassword.setEditable(false);
                 ta_comment.setEditable(true);
                 cb_room.setEnabled(true);
                 cb_outlet.setEnabled(true); 
                 tf_userEmail.setEditable(true);
                 bt_products.setText("Modify");
+                cb_active.setEnabled(true);
         }
     }
     
@@ -99,6 +117,8 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
                         LinkedHashMap<String, M_Room> roomList, LinkedHashMap<Integer, M_Method> paymentMethodList,
                         LinkedHashMap<Integer, M_Product> productList, LinkedHashMap<Integer, M_Payment> paymentList){
         empty();
+        this.subscriptionId = subscription.getId();
+        this.subscription = subscription;
         this.productList = productList;
         this.paymentList = paymentList;
         this.paymentMethodList = paymentMethodList;
@@ -112,8 +132,10 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
         M_Outlet outlet = outletList.get(subscription.getCode_outlet());
         tf_userFirstName.setText(user.getFirst_name());
         tf_userLastName.setText(user.getLast_name());
-        tf_beginDate.setText(String.valueOf(subscription.getDate_begin()));
-        tf_endDate.setText(String.valueOf(subscription.getDate_end()));
+        Date dateBegin = M_Subscription.convertToDateViaInstant(subscription.getDate_begin());
+        Date dateEnd = M_Subscription.convertToDateViaInstant(subscription.getDate_end());
+        dt_beginDate.setDate(dateBegin);
+        dt_endDate.setDate(dateEnd);
         ta_comment.setText(subscription.getComment());
         tf_boxLogin.setText(subscription.getLogin());
         tf_boxPassword.setText(subscription.getPassword());
@@ -128,6 +150,8 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
          }
         cb_room.setSelectedIndex(indexRoom);
         String selectedRoomCode = cb_room.getItemAt(indexRoom);
+        
+        /*
         compteur = 0;
         
         for (String code : outletList.keySet()) {
@@ -141,11 +165,13 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
                 compteur++;
             }
         }
+        */
         this.setVisible(true);
     }
     
     public V_SubscriptionDetail(C_internet_subscription controller, java.awt.Frame parent, boolean modal) {
         super(parent, modal);
+        this.controller = controller;
         initComponents();
     }
 
@@ -167,8 +193,6 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
         lb_boxPassword = new javax.swing.JLabel();
         tf_userFirstName = new javax.swing.JTextField();
         tf_userEmail = new javax.swing.JTextField();
-        tf_beginDate = new javax.swing.JTextField();
-        tf_endDate = new javax.swing.JTextField();
         tf_boxLogin = new javax.swing.JTextField();
         tf_boxPassword = new javax.swing.JTextField();
         cb_active = new javax.swing.JCheckBox();
@@ -191,9 +215,15 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
         jScrollPane4 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
+        bt_validerCrud = new javax.swing.JButton();
+        dt_beginDate = new com.toedter.calendar.JDateChooser();
+        dt_endDate = new com.toedter.calendar.JDateChooser();
+        bt_cancel = new javax.swing.JButton();
+        bt_payments = new javax.swing.JButton();
+        bt_computers = new javax.swing.JButton();
         mb_menu = new javax.swing.JMenuBar();
         mn_file = new javax.swing.JMenu();
-        mi_exit = new javax.swing.JMenuItem();
+        mi_close = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -244,7 +274,12 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
 
         lb_payments.setText("Payments");
 
-        bt_products.setText("jButton1");
+        bt_products.setText("Modify");
+        bt_products.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_productsActionPerformed(evt);
+            }
+        });
 
         tb_payments.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -278,6 +313,12 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
         ta_comment.setRows(5);
         jScrollPane3.setViewportView(ta_comment);
 
+        cb_room.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cb_roomItemStateChanged(evt);
+            }
+        });
+
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -304,19 +345,48 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
 
         jLabel1.setText("Computers");
 
+        bt_validerCrud.setText("Validate");
+        bt_validerCrud.setToolTipText("");
+        bt_validerCrud.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_validerCrudActionPerformed(evt);
+            }
+        });
+
+        bt_cancel.setText("Cancel");
+        bt_cancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_cancelActionPerformed(evt);
+            }
+        });
+
+        bt_payments.setText("Modify");
+        bt_payments.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_paymentsActionPerformed(evt);
+            }
+        });
+
+        bt_computers.setText("Modify");
+        bt_computers.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_computersActionPerformed(evt);
+            }
+        });
+
         mb_menu.setName("mb_menu"); // NOI18N
 
         mn_file.setText("File");
         mn_file.setName("mn_file"); // NOI18N
 
-        mi_exit.setText("Exit");
-        mi_exit.setName("mi_exit"); // NOI18N
-        mi_exit.addActionListener(new java.awt.event.ActionListener() {
+        mi_close.setText("Close");
+        mi_close.setName("mi_close"); // NOI18N
+        mi_close.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mi_exitActionPerformed(evt);
+                mi_closeActionPerformed(evt);
             }
         });
-        mn_file.add(mi_exit);
+        mn_file.add(mi_close);
 
         mb_menu.add(mn_file);
 
@@ -331,75 +401,91 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(40, 40, 40)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(lb_userName)
-                                        .addComponent(jLabel3)
-                                        .addComponent(lb_userEmail))
-                                    .addGap(18, 18, 18)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(tf_userFirstName)
-                                        .addComponent(tf_userEmail)
-                                        .addComponent(tf_userLastName, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(lb_boxLogin)
-                                            .addComponent(lb_endDate))
-                                        .addComponent(lb_beginDate)
-                                        .addComponent(lb_boxPassword))
-                                    .addGap(16, 16, 16)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(tf_boxPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)
-                                        .addComponent(tf_boxLogin)
-                                        .addComponent(tf_endDate)
-                                        .addComponent(tf_beginDate))))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(27, 27, 27)
-                                .addComponent(lb_comment)
-                                .addGap(18, 18, 18)
-                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(lb_userName)
+                                            .addComponent(jLabel3)
+                                            .addComponent(lb_userEmail))
+                                        .addGap(18, 18, 18)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(tf_userFirstName)
+                                            .addComponent(tf_userEmail)
+                                            .addComponent(tf_userLastName, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addComponent(lb_boxLogin)
+                                                .addComponent(lb_endDate))
+                                            .addComponent(lb_beginDate))
+                                        .addGap(16, 16, 16)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(tf_boxLogin, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)
+                                            .addComponent(dt_beginDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(dt_endDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                .addGap(32, 32, 32))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(lb_boxPassword)
+                                    .addGap(16, 16, 16)
+                                    .addComponent(tf_boxPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGap(21, 21, 21)
+                                    .addComponent(lb_comment)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(212, 212, 212)
                                 .addComponent(lb_crud, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
+                                .addGap(84, 84, 84)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGap(84, 84, 84)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addComponent(lb_outlet)
-                                                    .addComponent(lb_room))
-                                                .addGap(18, 18, 18)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                    .addComponent(cb_outlet, 0, 178, Short.MAX_VALUE)
-                                                    .addComponent(cb_room, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                            .addComponent(lb_outlet)
+                                            .addComponent(lb_room))
+                                        .addGap(18, 18, 18)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(cb_outlet, 0, 178, Short.MAX_VALUE)
+                                            .addComponent(cb_room, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addComponent(lb_products)
+                                                .addGap(103, 103, 103)))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                            .addGap(76, 76, 76)
+                                            .addComponent(bt_products)
+                                            .addGap(86, 86, 86))))
+                                .addGap(66, 66, 66)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addGap(133, 133, 133)
                                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                                    .addComponent(lb_products)
-                                                    .addGap(103, 103, 103)))))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(164, 164, 164)
-                                        .addComponent(bt_products)))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(66, 66, 66)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(199, 199, 199)
-                                        .addComponent(jLabel1))))))
+                                                .addComponent(bt_payments)
+                                                .addComponent(jLabel1))))))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(bt_computers)
+                                .addGap(128, 128, 128))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(229, 229, 229)
                         .addComponent(cb_active)
                         .addGap(560, 560, 560)
                         .addComponent(lb_payments)))
-                .addGap(69, 69, Short.MAX_VALUE))
+                .addGap(70, 70, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(331, 331, 331)
+                .addComponent(bt_validerCrud)
+                .addGap(57, 57, 57)
+                .addComponent(bt_cancel)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -408,56 +494,65 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(27, 27, 27)
+                        .addComponent(cb_active)
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lb_userName)
+                            .addComponent(tf_userFirstName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(tf_userLastName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(15, 15, 15)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lb_userEmail)
+                            .addComponent(tf_userEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(23, 23, 23)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lb_beginDate)
+                            .addComponent(dt_beginDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lb_endDate)
+                            .addComponent(dt_endDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lb_boxLogin)
+                            .addComponent(tf_boxLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(90, 90, 90)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lb_boxPassword)
+                            .addComponent(tf_boxPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(cb_active)
                                 .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(lb_userName)
-                                    .addComponent(tf_userFirstName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel3)
-                                    .addComponent(tf_userLastName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(15, 15, 15)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(lb_userEmail)
-                                    .addComponent(tf_userEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(20, 20, 20)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(lb_beginDate)
-                                    .addComponent(tf_beginDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(lb_endDate)
-                                    .addComponent(tf_endDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(lb_boxLogin)
-                                    .addComponent(tf_boxLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(132, 132, 132)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(lb_boxPassword)
-                                    .addComponent(tf_boxPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(31, 31, 31)
-                                        .addComponent(lb_comment))))
+                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(5, 5, 5)
+                                .addGap(31, 31, 31)
+                                .addComponent(lb_comment)))
+                        .addGap(283, 283, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(32, 32, 32)
                                 .addComponent(lb_payments)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel1)
-                                .addGap(14, 14, 14)
-                                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lb_crud)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(18, 18, 18)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                            .addComponent(lb_products)
+                                            .addComponent(bt_payments))
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(bt_products))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(133, 133, 133)
+                                        .addComponent(jLabel1)
+                                        .addGap(14, 14, 14)
+                                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(69, 69, 69)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -466,22 +561,82 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
                                 .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(lb_outlet)
-                                    .addComponent(cb_outlet, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(cb_outlet, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(lb_crud))
                         .addGap(18, 18, 18)
-                        .addComponent(lb_products)
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(35, 35, 35)
-                        .addComponent(bt_products)))
-                .addGap(232, 232, Short.MAX_VALUE))
+                        .addComponent(bt_computers)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(bt_validerCrud)
+                            .addComponent(bt_cancel))
+                        .addGap(228, 228, 228))))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void mi_exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mi_exitActionPerformed
-        System.exit(0);
-    }//GEN-LAST:event_mi_exitActionPerformed
+    private void mi_closeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mi_closeActionPerformed
+        this.setVisible(false);
+    }//GEN-LAST:event_mi_closeActionPerformed
+
+    private void bt_validerCrudActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_validerCrudActionPerformed
+        LocalDate dateBegin = M_Subscription.convertToLocalDateViaInstant(dt_beginDate.getDate());
+        LocalDate dateEnd = M_Subscription.convertToLocalDateViaInstant(dt_endDate.getDate());
+        try {
+            controller.updateSubscription(subscriptionId, tf_userFirstName.getText(), tf_userLastName.getText(), tf_userEmail.getText(),
+                    dateBegin, dateEnd, tf_boxLogin.getText(), ta_comment.getText(), cb_outlet.getSelectedItem().toString(),
+                    cb_room.getSelectedItem().toString());
+        } catch (SQLException ex) {
+            System.getLogger(V_SubscriptionDetail.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+        this.setVisible(false);
+    }//GEN-LAST:event_bt_validerCrudActionPerformed
+
+    private void bt_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_cancelActionPerformed
+        try {
+            controller.subscriptionPage(0);
+        } catch (SQLException ex) {
+            System.getLogger(V_SubscriptionDetail.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+        this.setVisible(false);
+    }//GEN-LAST:event_bt_cancelActionPerformed
+
+    private void cb_roomItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cb_roomItemStateChanged
+    if (evt.getStateChange() == ItemEvent.SELECTED)  {  
+        Object selected = cb_room.getSelectedItem();
+        if (selected != null) {  // <-- Add this null check
+            try {
+                controller.updateOutletListByRoom(selected.toString());
+            } catch (SQLException ex) {
+                System.getLogger(V_SubscriptionDetail.class.getName()).log(System.Logger.Level.ERROR, "Failed to update outlet list", ex);
+            }
+        }
+    }
+    }//GEN-LAST:event_cb_roomItemStateChanged
+
+    private void bt_paymentsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_paymentsActionPerformed
+        try {
+            controller.subscriptionAdditionsPage("payments", subscription);
+        } catch (SQLException ex) {
+            System.getLogger(V_SubscriptionDetail.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }//GEN-LAST:event_bt_paymentsActionPerformed
+
+    private void bt_productsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_productsActionPerformed
+        try {
+            controller.subscriptionAdditionsPage("products", subscription);
+        } catch (SQLException ex) {
+            System.getLogger(V_SubscriptionDetail.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }//GEN-LAST:event_bt_productsActionPerformed
+
+    private void bt_computersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_computersActionPerformed
+        try {
+            controller.subscriptionAdditionsPage("computers", subscription);
+        } catch (SQLException ex) {
+            System.getLogger(V_SubscriptionDetail.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }//GEN-LAST:event_bt_computersActionPerformed
 
     /**
      * @param args the command line arguments
@@ -521,10 +676,16 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton bt_cancel;
+    private javax.swing.JButton bt_computers;
+    private javax.swing.JButton bt_payments;
     private javax.swing.JButton bt_products;
+    private javax.swing.JButton bt_validerCrud;
     private javax.swing.JCheckBox cb_active;
     private javax.swing.JComboBox<String> cb_outlet;
     private javax.swing.JComboBox<String> cb_room;
+    private com.toedter.calendar.JDateChooser dt_beginDate;
+    private com.toedter.calendar.JDateChooser dt_endDate;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
@@ -545,15 +706,13 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
     private javax.swing.JLabel lb_userEmail;
     private javax.swing.JLabel lb_userName;
     private javax.swing.JMenuBar mb_menu;
-    private javax.swing.JMenuItem mi_exit;
+    private javax.swing.JMenuItem mi_close;
     private javax.swing.JMenu mn_file;
     private javax.swing.JTextArea ta_comment;
     private javax.swing.JTable tb_payments;
     private javax.swing.JTable tb_products;
-    private javax.swing.JTextField tf_beginDate;
     private javax.swing.JTextField tf_boxLogin;
     private javax.swing.JTextField tf_boxPassword;
-    private javax.swing.JTextField tf_endDate;
     private javax.swing.JTextField tf_userEmail;
     private javax.swing.JTextField tf_userFirstName;
     private javax.swing.JTextField tf_userLastName;

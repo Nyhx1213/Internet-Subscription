@@ -26,6 +26,7 @@ public class V_Subscription extends javax.swing.JDialog {
     private LinkedHashMap <Integer, M_Subscription> subscriptionList; // Contains internet subscriptions.
     private int maxPageSize = 50, currentPage = 0, currentId;
     private M_Subscription selectedSubscription;
+
     /**
      * Creates new form V_Subscription
      */
@@ -39,7 +40,10 @@ public class V_Subscription extends javax.swing.JDialog {
         }
     }
     
-    public void display(LinkedHashMap <Integer, M_Subscription> subscriptionList){
+    public void display(LinkedHashMap <Integer, M_Subscription> subscriptionList, Boolean messageExist, String message){
+        if (messageExist) {
+            op_Error.showMessageDialog(this, message);
+        }
         dm_tb_internetSub = (DefaultTableModel) tb_internetSub.getModel();
         //tb_internetSub.getColumnModel().getColumn(0).setWidth(0);
         //tb_internetSub.getColumnModel().getColumn(0).setMaxWidth(0);
@@ -75,7 +79,7 @@ public class V_Subscription extends javax.swing.JDialog {
         this.controller = controller;
         initComponents();
     }
-
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -97,7 +101,7 @@ public class V_Subscription extends javax.swing.JDialog {
         bt_modify = new javax.swing.JButton();
         mb_menu = new javax.swing.JMenuBar();
         mn_file = new javax.swing.JMenu();
-        mi_exit = new javax.swing.JMenuItem();
+        mi_close = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -180,6 +184,11 @@ public class V_Subscription extends javax.swing.JDialog {
         bt_delete.setBounds(460, 170, 90, 23);
 
         bt_modify.setText("Modify");
+        bt_modify.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_modifyActionPerformed(evt);
+            }
+        });
         getContentPane().add(bt_modify);
         bt_modify.setBounds(460, 230, 90, 23);
 
@@ -188,14 +197,14 @@ public class V_Subscription extends javax.swing.JDialog {
         mn_file.setText("File");
         mn_file.setName("mn_file"); // NOI18N
 
-        mi_exit.setText("Exit");
-        mi_exit.setName("mi_exit"); // NOI18N
-        mi_exit.addActionListener(new java.awt.event.ActionListener() {
+        mi_close.setText("Close");
+        mi_close.setName("mi_close"); // NOI18N
+        mi_close.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mi_exitActionPerformed(evt);
+                mi_closeActionPerformed(evt);
             }
         });
-        mn_file.add(mi_exit);
+        mn_file.add(mi_close);
 
         mb_menu.add(mn_file);
 
@@ -204,9 +213,9 @@ public class V_Subscription extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void mi_exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mi_exitActionPerformed
-        System.exit(0);
-    }//GEN-LAST:event_mi_exitActionPerformed
+    private void mi_closeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mi_closeActionPerformed
+        this.setVisible(false);
+    }//GEN-LAST:event_mi_closeActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         this.setVisible(false);
@@ -245,6 +254,17 @@ public class V_Subscription extends javax.swing.JDialog {
     private void bt_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_addActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_bt_addActionPerformed
+
+    private void bt_modifyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_modifyActionPerformed
+        subscriptionInfo();
+        errorSelection("Please select a user.");
+        try {
+            selectedSubscription.toString();
+            controller.subscriptionCrud("modify", selectedSubscription);
+        } catch (SQLException ex) {
+            System.getLogger(V_Subscription.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }//GEN-LAST:event_bt_modifyActionPerformed
 
     /**
      * @param args the command line arguments
@@ -293,7 +313,7 @@ public class V_Subscription extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenuBar mb_menu;
-    private javax.swing.JMenuItem mi_exit;
+    private javax.swing.JMenuItem mi_close;
     private javax.swing.JMenu mn_file;
     private javax.swing.JOptionPane op_Error;
     private javax.swing.JTable tb_internetSub;

@@ -8,6 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import pj_internet_subscription.Cl_Connexion;
 import pj_internet_subscription.Db_mariadb;
@@ -286,6 +288,15 @@ public class M_Subscription {
         }
         return subscriptionList;
     }
+    
+    public static LocalDate convertToLocalDateViaInstant (Date dateToConvert){
+        return dateToConvert.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+    
+    public static Date convertToDateViaInstant (LocalDate localDateToConvert) {
+        return Date.from(localDateToConvert.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
+    
     public String toString(){
         return "M_Subscription{ id = "+id+", id_user="+id_user+", comment="+comment+", login="+login+", password="+password+", code_outlet="+code_outlet+", date_begin="+date_begin+", date_end="+date_end+", created_at="+created_at+", updated_at="+updated_at+" }";
     }

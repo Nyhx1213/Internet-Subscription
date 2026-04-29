@@ -15,13 +15,13 @@
             <Property name="name" type="java.lang.String" value="mn_file" noResource="true"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="mi_exit">
+            <MenuItem class="javax.swing.JMenuItem" name="mi_close">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Exit"/>
-                <Property name="name" type="java.lang.String" value="mi_exit" noResource="true"/>
+                <Property name="text" type="java.lang.String" value="Close"/>
+                <Property name="name" type="java.lang.String" value="mi_close" noResource="true"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mi_exitActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mi_closeActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
@@ -192,6 +192,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Modify"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bt_modifyActionPerformed"/>
+      </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
           <AbsoluteConstraints x="460" y="230" width="90" height="-1"/>

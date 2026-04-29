@@ -142,8 +142,6 @@ public class V_Main extends javax.swing.JFrame {
         mn_parameters = new javax.swing.JMenu();
         mi_rooms = new javax.swing.JMenuItem();
         mi_users = new javax.swing.JMenuItem();
-        mi_computer = new javax.swing.JMenuItem();
-        mi_paymentMeth = new javax.swing.JMenuItem();
         mn_management = new javax.swing.JMenu();
         mi_subscriptions = new javax.swing.JMenuItem();
         mi_accommodations = new javax.swing.JMenuItem();
@@ -158,6 +156,8 @@ public class V_Main extends javax.swing.JFrame {
         });
 
         lb_connection.setText("Connection");
+
+        tf_password.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
 
         lb_email.setText("Email : ");
 
@@ -209,14 +209,6 @@ public class V_Main extends javax.swing.JFrame {
         mi_users.setText("Users");
         mi_users.setName("mi_users"); // NOI18N
         mn_parameters.add(mi_users);
-
-        mi_computer.setText("Computer Sys/AV");
-        mi_computer.setName("mi_computer"); // NOI18N
-        mn_parameters.add(mi_computer);
-
-        mi_paymentMeth.setText("Payment Methods");
-        mi_paymentMeth.setName("mi_paymentMeth"); // NOI18N
-        mn_parameters.add(mi_paymentMeth);
 
         mb_menu.add(mn_parameters);
 
@@ -370,10 +362,8 @@ public class V_Main extends javax.swing.JFrame {
     private javax.swing.JLabel lb_session;
     private javax.swing.JMenuBar mb_menu;
     private javax.swing.JMenuItem mi_accommodations;
-    private javax.swing.JMenuItem mi_computer;
     private javax.swing.JMenuItem mi_disconnect;
     private javax.swing.JMenuItem mi_exit;
-    private javax.swing.JMenuItem mi_paymentMeth;
     private javax.swing.JMenuItem mi_rooms;
     private javax.swing.JMenuItem mi_subscriptions;
     private javax.swing.JMenuItem mi_users;
