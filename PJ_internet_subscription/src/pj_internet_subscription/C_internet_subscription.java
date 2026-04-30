@@ -132,6 +132,33 @@ public class C_internet_subscription {
         fm_subscriptionCrud.updateOutlet(M_Outlet.getRecords(baseRR, "code_room = '" + roomCode + "'"));
     }
     
+    public void deleteProductFromSub(int productId, M_Subscription subscription) throws SQLException{
+        M_Buy boughtProduct = new M_Buy (baseRR, subscription.getId(), productId);
+        boughtProduct.reduceQuantity(1);
+        if (boughtProduct.getQuantity()< 1) {
+            boughtProduct.delete();
+        } else {
+            boughtProduct.update();
+        }
+        subscriptionAdditionsPage("products", subscription);
+    }
+    
+    // USE THIS LATER TO MAKE PAYMENTS Right now its not usable its not right !
+    public void updateProductsInSubscription (LinkedHashMap<Integer, M_Product> additionList, LinkedHashMap<Integer, M_Product> deletionList, M_Subscription subscription) throws SQLException {
+        int subscriptionId = subscription.getId();
+        for (int key : deletionList.keySet() ) {
+            M_Buy boughtProduct = new M_Buy(baseRR, deletionList.get(key).getId(), subscriptionId);
+            boughtProduct.delete();
+        }
+        
+        for (int key : additionList.keySet()) {
+            M_Product currentProduct = additionList.get(key); 
+            M_Buy boughtProduct = new M_Buy(baseRR, subscriptionId, currentProduct.getId(), currentProduct.getPrice(), currentProduct.getQuantity(), "");
+        }
+        
+        subscriptionCrud("Modify", subscription);
+    }
+    
     public void roomPage() throws SQLException {
         fm_room.display(M_Room.getRecords(baseRR));
     }

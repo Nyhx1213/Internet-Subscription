@@ -242,7 +242,7 @@ public class V_Subscription extends javax.swing.JDialog {
 
     private void bt_detailsSubActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_detailsSubActionPerformed
         subscriptionInfo();
-        errorSelection("Please select a user.");
+        errorSelection("Please select a subscription.");
         try {
             selectedSubscription.toString();
             controller.subscriptionCrud("detail", selectedSubscription);

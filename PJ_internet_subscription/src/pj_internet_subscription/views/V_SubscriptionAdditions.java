@@ -7,7 +7,9 @@ package pj_internet_subscription.views;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import jdk.jshell.JShell;
 import pj_internet_subscription.C_internet_subscription;
 import pj_internet_subscription.model.M_Computer;
 import pj_internet_subscription.model.M_Method;
@@ -27,11 +29,10 @@ public class V_SubscriptionAdditions extends javax.swing.JDialog {
     private DefaultTableModel dm_tb_products;
     private int nbRow;
     private ArrayList<M_Product> productArray;
-    private LinkedHashMap<Integer, M_Product> addedProductList, allProducts;
+    private LinkedHashMap<Integer, M_Product> addedProductList, allProducts, deletedProductList;
     private M_Subscription currentSubscription;
-    private LinkedHashMap<Integer, M_Product> deletedProductList;
     
-    private void displayContent(String action){
+    private void displayContent(String action) throws SQLException{
         this.action = action;
         switch (action) {
             case "products" : 
@@ -50,7 +51,7 @@ public class V_SubscriptionAdditions extends javax.swing.JDialog {
                 pn_computers.setVisible(false);
                 break;
             default : 
-                this.controller.subscriptionCrud("modify", subscription);
+                this.controller.subscriptionCrud("modify", currentSubscription);
                 this.setVisible(false);
         } 
     }
@@ -63,26 +64,30 @@ public class V_SubscriptionAdditions extends javax.swing.JDialog {
         dm_tb_products.setRowCount(0);        
         for (int key : currentProducts.keySet() ) {
             product = currentProducts.get(key);
-            dm_tb_products.addRow(new Object[]{product.getId(), product.getDesignation(), product.getPrice()});
+            dm_tb_products.addRow(new Object[]{product.getId(), product.getDesignation(), product.getPrice(), product.getQuantity()});
             nbRow++;
-            productArray.add(nbRow, product);
+            productArray.add(product);
             
         }
     }
  
     // Payment Display
-    public void displayPayments(String action, M_Subscription subscription, LinkedHashMap<Integer, M_Method> paymentMethodList, LinkedHashMap<Integer, M_Payment> currentPaymentsList) {
+    public void displayPayments(String action, M_Subscription subscription, LinkedHashMap<Integer, M_Method> paymentMethodList, LinkedHashMap<Integer, M_Payment> currentPaymentsList) throws SQLException {
         this.currentSubscription = subscription;
         displayContent(action);
         this.setVisible(true);
     }
     
-    public void displayProducts(String action, M_Subscription subscription, LinkedHashMap<Integer, M_Product> productList, LinkedHashMap<Integer, M_Product> currentProductList) {
+    public void displayProducts(String action, M_Subscription subscription, LinkedHashMap<Integer, M_Product> productList, LinkedHashMap<Integer, M_Product> currentProductList) throws SQLException {
+        addedProductList = null;
+        deletedProductList = null;
+        productArray = null;
+        addedProductList = new LinkedHashMap();
+        deletedProductList = new LinkedHashMap();    
+        productArray = new ArrayList();
         this.currentSubscription = subscription;
         this.allProducts = productList;
         dm_tb_products = (DefaultTableModel) tb_products.getModel();
-        addedProductList = null;
-        deletedProductList = null;
         displayContent(action);
         productTable(currentProductList);
         for (int id : productList.keySet()){
@@ -91,7 +96,7 @@ public class V_SubscriptionAdditions extends javax.swing.JDialog {
         this.setVisible(true);
     }
     
-    public void displayComputers(String action, M_Subscription subscription, LinkedHashMap<Integer, M_Computer> currentComputers) {
+    public void displayComputers(String action, M_Subscription subscription, LinkedHashMap<Integer, M_Computer> currentComputers) throws SQLException {
         this.currentSubscription = subscription;        
         displayContent(action);
         this.setVisible(true);
@@ -105,6 +110,13 @@ public class V_SubscriptionAdditions extends javax.swing.JDialog {
         this.controller = controller;
         initComponents();
     }
+    
+    public void errorSelection(JTable tb, String errorMessage){
+        if (tb.getSelectedRow() == -1){
+            op_error.showMessageDialog(this, errorMessage);
+        }
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -119,12 +131,13 @@ public class V_SubscriptionAdditions extends javax.swing.JDialog {
         pn_products = new javax.swing.JPanel();
         lb_productsTitle = new javax.swing.JLabel();
         bt_exitProducts = new javax.swing.JButton();
-        bt_validateProducts = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tb_products = new javax.swing.JTable();
         bt_deleteProduct = new javax.swing.JButton();
         cb_productList = new javax.swing.JComboBox<>();
         bt_addProduct = new javax.swing.JButton();
+        pn_payments = new javax.swing.JPanel();
+        pn_computers = new javax.swing.JPanel();
         mb_menu = new javax.swing.JMenuBar();
         mn_file = new javax.swing.JMenu();
         mi_close = new javax.swing.JMenuItem();
@@ -141,23 +154,16 @@ public class V_SubscriptionAdditions extends javax.swing.JDialog {
             }
         });
 
-        bt_validateProducts.setText("Validate");
-        bt_validateProducts.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bt_validateProductsActionPerformed(evt);
-            }
-        });
-
         tb_products.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Id", "Title", "Price"
+                "Id", "Title", "Price", "Quantity"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -169,6 +175,7 @@ public class V_SubscriptionAdditions extends javax.swing.JDialog {
             tb_products.getColumnModel().getColumn(0).setResizable(false);
             tb_products.getColumnModel().getColumn(1).setResizable(false);
             tb_products.getColumnModel().getColumn(2).setResizable(false);
+            tb_products.getColumnModel().getColumn(3).setResizable(false);
         }
 
         bt_deleteProduct.setText("Delete");
@@ -189,12 +196,6 @@ public class V_SubscriptionAdditions extends javax.swing.JDialog {
         pn_products.setLayout(pn_productsLayout);
         pn_productsLayout.setHorizontalGroup(
             pn_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pn_productsLayout.createSequentialGroup()
-                .addGap(144, 144, 144)
-                .addComponent(bt_validateProducts)
-                .addGap(188, 188, 188)
-                .addComponent(bt_exitProducts)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pn_productsLayout.createSequentialGroup()
                 .addContainerGap(87, Short.MAX_VALUE)
                 .addGroup(pn_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -212,6 +213,10 @@ public class V_SubscriptionAdditions extends javax.swing.JDialog {
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pn_productsLayout.createSequentialGroup()
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 435, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(115, 115, 115))))))
+            .addGroup(pn_productsLayout.createSequentialGroup()
+                .addGap(271, 271, 271)
+                .addComponent(bt_exitProducts)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         pn_productsLayout.setVerticalGroup(
             pn_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -226,11 +231,31 @@ public class V_SubscriptionAdditions extends javax.swing.JDialog {
                     .addComponent(cb_productList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(bt_addProduct)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 85, Short.MAX_VALUE)
-                .addGroup(pn_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(bt_validateProducts)
-                    .addComponent(bt_exitProducts))
-                .addGap(58, 58, 58))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
+                .addComponent(bt_exitProducts)
+                .addGap(87, 87, 87))
+        );
+
+        javax.swing.GroupLayout pn_paymentsLayout = new javax.swing.GroupLayout(pn_payments);
+        pn_payments.setLayout(pn_paymentsLayout);
+        pn_paymentsLayout.setHorizontalGroup(
+            pn_paymentsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+        pn_paymentsLayout.setVerticalGroup(
+            pn_paymentsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout pn_computersLayout = new javax.swing.GroupLayout(pn_computers);
+        pn_computers.setLayout(pn_computersLayout);
+        pn_computersLayout.setHorizontalGroup(
+            pn_computersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+        pn_computersLayout.setVerticalGroup(
+            pn_computersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
         );
 
         mb_menu.setName("mb_menu"); // NOI18N
@@ -258,7 +283,11 @@ public class V_SubscriptionAdditions extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addGap(22, 22, 22)
                 .addComponent(pn_products, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(33, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pn_payments, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pn_computers, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -266,6 +295,12 @@ public class V_SubscriptionAdditions extends javax.swing.JDialog {
                 .addContainerGap()
                 .addComponent(pn_products, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(9, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(pn_computers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(64, 64, 64)
+                .addComponent(pn_payments, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(114, 114, 114))
         );
 
         pack();
@@ -276,9 +311,15 @@ public class V_SubscriptionAdditions extends javax.swing.JDialog {
     }//GEN-LAST:event_mi_closeActionPerformed
 
     private void bt_deleteProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_deleteProductActionPerformed
+        errorSelection(tb_products, "Please select a product.");
         int productId = (Integer) dm_tb_products.getValueAt(tb_products.getSelectedRow(), 0);
-        deletedProductList.put(productId, allProducts.get(productId));
-        dm_tb_products.removeRow(tb_products.getSelectedRow());
+        try {
+            controller.deleteProductFromSub(productId, currentSubscription);
+            //deletedProductList.put(productId, allProducts.get(productId));
+            //dm_tb_products.removeRow(tb_products.getSelectedRow());
+        } catch (SQLException ex) {
+            System.getLogger(V_SubscriptionAdditions.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }//GEN-LAST:event_bt_deleteProductActionPerformed
 
     private void bt_addProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_addProductActionPerformed
@@ -295,14 +336,6 @@ public class V_SubscriptionAdditions extends javax.swing.JDialog {
         }
         this.setVisible(false);
     }//GEN-LAST:event_bt_exitProductsActionPerformed
-
-    private void bt_validateProductsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_validateProductsActionPerformed
-        if (addedProductList == null) {
-            op_error.showMessageDialog(this, "Please make sure that a product was added to the basket.");
-        } else {
-            controller.updateProductsInSubscription(addedProductList, deletedProductList);
-        }
-    }//GEN-LAST:event_bt_validateProductsActionPerformed
 
     /**
      * @param args the command line arguments
@@ -345,7 +378,6 @@ public class V_SubscriptionAdditions extends javax.swing.JDialog {
     private javax.swing.JButton bt_addProduct;
     private javax.swing.JButton bt_deleteProduct;
     private javax.swing.JButton bt_exitProducts;
-    private javax.swing.JButton bt_validateProducts;
     private javax.swing.JComboBox<String> cb_productList;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lb_productsTitle;
@@ -353,6 +385,8 @@ public class V_SubscriptionAdditions extends javax.swing.JDialog {
     private javax.swing.JMenuItem mi_close;
     private javax.swing.JMenu mn_file;
     private javax.swing.JOptionPane op_error;
+    private javax.swing.JPanel pn_computers;
+    private javax.swing.JPanel pn_payments;
     private javax.swing.JPanel pn_products;
     private javax.swing.JTable tb_products;
     // End of variables declaration//GEN-END:variables

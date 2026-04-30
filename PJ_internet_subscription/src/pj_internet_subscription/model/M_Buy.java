@@ -24,12 +24,12 @@ import pj_internet_subscription.Db_mariadb;
  */
 public class M_Buy {
     private Db_mariadb db;
-    private int id_subscription, id_product, price;
-    private float quantity;
+    private int id_subscription, id_product;
+    private float quantity, price;
     private String comment;
     private LocalDateTime created_at, updated_at; 
 
-    public M_Buy(Db_mariadb db, int id_subscription, int id_product, int price, float quantity, String comment, LocalDateTime created_at, LocalDateTime updated_at) {
+    public M_Buy(Db_mariadb db, int id_subscription, int id_product, float price, float quantity, String comment, LocalDateTime created_at, LocalDateTime updated_at) {
         this.db = db;
         this.id_subscription = id_subscription;
         this.id_product = id_product;
@@ -40,7 +40,7 @@ public class M_Buy {
         this.updated_at = updated_at;
     }
 
-    public M_Buy(Db_mariadb db, int id_subscription, int id_product, int price, float quantity, String comment) throws SQLException {
+    public M_Buy(Db_mariadb db, int id_subscription, int id_product, float price, float quantity, String comment) throws SQLException {
         this.db = db;
         this.id_subscription = id_subscription;
         this.id_product = id_product;
@@ -91,7 +91,7 @@ public class M_Buy {
         return id_product;
     }
 
-    public int getPrice() {
+    public float getPrice() {
         return price;
     }
 
@@ -143,6 +143,14 @@ public class M_Buy {
         this.updated_at = updated_at;
     }
 
+    public void reduceQuantity (float quantity) {
+        this.quantity = this.quantity -1 ;
+    } 
+    
+    public void increaseQuantity (float quantity) {
+        this.quantity = this.quantity +1 ;
+    }
+    
     public void update() throws SQLException {
         String sql = "UPDATE mcd_buy "
                 + "SET comment = '"+comment+"', id_product="+id_product+", price="+price+", quantity="+quantity+", id_subscription="+id_subscription+" WHERE id_subscription="+id_subscription+" AND id_product="+id_product;
