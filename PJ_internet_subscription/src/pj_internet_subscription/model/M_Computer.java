@@ -63,12 +63,12 @@ public class M_Computer {
         res.close();
     }
 
-    public M_Computer(Db_mariadb db, int idSubscription) throws SQLException {
+    public M_Computer(Db_mariadb db, int computerId) throws SQLException {
         this.db = db;
-        this.id = id;
+        this.id = computerId;
         
         String sql;
-        sql = "SELECT * FROM mcd_computers WHERE id_subscription="+idSubscription+" ";
+        sql = "SELECT * FROM mcd_computers WHERE id="+computerId+" ";
         
         ResultSet res = db.sqlSelect(sql);
         res.first();
@@ -163,7 +163,7 @@ public class M_Computer {
     }
     
     public void delete() throws SQLException {
-        String sql = "DELETE FROM mcd_computers WHERE id="+id+"";
+        String sql = "DELETE FROM mcd_computers WHERE id="+id;
         db.sqlExec(sql);
     }
     
@@ -213,10 +213,11 @@ public class M_Computer {
         //Constructors
         //computer = new M_Computer(db, 11, 1, 5, 1, "", "test", LocalDateTime.MAX, LocalDateTime.MAX);
          //computer = new M_Computer(db, 1, 21, 1, "test" ,"test");
-         //computer = new M_Computer(db, 40);
+         computer = new M_Computer(db, 40);
+         System.out.println(computer.getId());
         
         //Delete
-          //computer.delete();
+          computer.delete();
         
         //Update
          //computer.setComment("Please Switch my comment!");

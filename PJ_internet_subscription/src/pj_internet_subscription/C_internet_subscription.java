@@ -11,6 +11,7 @@ package pj_internet_subscription;
 import pj_internet_subscription.views.V_Main;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import pj_internet_subscription.model.M_Antivirus;
 import pj_internet_subscription.model.M_Authorized;
@@ -92,6 +93,12 @@ public class C_internet_subscription {
         fm_subscriptionCrud.display(action, subscription, user, roleList, computerList, systemList, antivirusList, outletList, roomList, paymentMethodList, productList, paymentList);
     }
     
+    public void deleteSubscription (int idSubscription) throws SQLException {
+        M_Subscription selectedSubscription = new M_Subscription(baseRR, idSubscription);
+        selectedSubscription.delete();
+        subscriptionPage(0);
+    }
+    
     public void updateSubscription(int subscriptionId, String firstName, String lastName, String email, LocalDate dateBegin, LocalDate dateEnd,
             String boxLogin, String comment, String roomCode, String outletCode) throws SQLException
     {
@@ -143,6 +150,18 @@ public class C_internet_subscription {
         subscriptionAdditionsPage("products", subscription);
     }
     
+    public void addProductToSub(int productId, M_Subscription subscription) throws SQLException {
+        if (M_Buy.exists(baseRR, productId, subscription.getId())){
+            M_Buy boughtProduct = new M_Buy(baseRR, subscription.getId(), productId);
+            boughtProduct.increaseQuantity(1);
+            boughtProduct.update();
+        } else {
+            M_Product currentProduct = new M_Product(baseRR, productId);
+            M_Buy newProduct = new M_Buy(baseRR, subscription.getId(), productId, currentProduct.getPrice(), 1, "");
+        }
+        subscriptionAdditionsPage("products", subscription);
+    }
+    
     // USE THIS LATER TO MAKE PAYMENTS Right now its not usable its not right !
     public void updateProductsInSubscription (LinkedHashMap<Integer, M_Product> additionList, LinkedHashMap<Integer, M_Product> deletionList, M_Subscription subscription) throws SQLException {
         int subscriptionId = subscription.getId();
@@ -157,6 +176,31 @@ public class C_internet_subscription {
         }
         
         subscriptionCrud("Modify", subscription);
+    }
+    
+    public void deleteComputerFromSub (int computerId, M_Subscription subscription) throws SQLException {
+        M_Computer currentComputer = new M_Computer(baseRR, computerId);
+        currentComputer.delete();
+                    System.out.println(currentComputer.getName());
+        subscriptionAdditionsPage("computers", subscription);
+    }
+    
+    public void addComputerToSub (String computerName, String comment, M_Subscription subscription) throws SQLException {
+        M_Computer newComputer = new M_Computer(baseRR, 1 , subscription.getId(), 1, computerName, comment);
+        subscriptionAdditionsPage("computers", subscription);
+    }
+    
+    public void deletePaymentFromSubscription (int paymentId, M_Subscription subscription) throws SQLException {
+        M_Payment currentPayment = new M_Payment(baseRR,paymentId);
+        currentPayment.delete();
+        subscriptionAdditionsPage("payments", subscription);
+    }
+    
+    public void addPaymentToSubscription(int selectedMethod, int amount, Date paymentDate, M_Subscription subscription) throws SQLException {
+        LocalDate localDatePaymentDate = M_Subscription.convertToLocalDateViaInstant(paymentDate);
+        M_Payment newPayment;
+        newPayment = new M_Payment(baseRR, selectedMethod, subscription.getId(), amount, "", localDatePaymentDate);
+        subscriptionAdditionsPage("payments", subscription);
     }
     
     public void roomPage() throws SQLException {

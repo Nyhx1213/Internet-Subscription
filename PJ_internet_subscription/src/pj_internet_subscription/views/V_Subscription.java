@@ -19,28 +19,27 @@ import pj_internet_subscription.model.M_User;
  * @author adjedjm
  */
 public class V_Subscription extends javax.swing.JDialog {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(V_Subscription.class.getName());
     private C_internet_subscription controller;
     private DefaultTableModel dm_tb_internetSub;
-    private LinkedHashMap <Integer, M_Subscription> subscriptionList; // Contains internet subscriptions.
+    private LinkedHashMap<Integer, M_Subscription> subscriptionList; // Contains internet subscriptions.
     private int maxPageSize = 50, currentPage = 0, currentId;
     private M_Subscription selectedSubscription;
 
     /**
      * Creates new form V_Subscription
      */
-    
-    private void subscriptionTable(){
+    private void subscriptionTable() {
         M_Subscription subscription = null;
-        dm_tb_internetSub.setRowCount(0);        
-        for (int key : subscriptionList.keySet() ) {
+        dm_tb_internetSub.setRowCount(0);
+        for (int key : subscriptionList.keySet()) {
             subscription = subscriptionList.get(key);
-            dm_tb_internetSub.addRow(new Object[]{subscription.getId(), subscription.getDate_begin(), subscription.getDate_end(), subscription.getFirstName()+" "+subscription.getLastName()});
+            dm_tb_internetSub.addRow(new Object[]{subscription.getId(), subscription.getFirstName() + " " + subscription.getLastName(), subscription.getDate_begin(), subscription.getDate_end()});
         }
     }
-    
-    public void display(LinkedHashMap <Integer, M_Subscription> subscriptionList, Boolean messageExist, String message){
+
+    public void display(LinkedHashMap<Integer, M_Subscription> subscriptionList, Boolean messageExist, String message) {
         if (messageExist) {
             op_Error.showMessageDialog(this, message);
         }
@@ -49,37 +48,36 @@ public class V_Subscription extends javax.swing.JDialog {
         //tb_internetSub.getColumnModel().getColumn(0).setMaxWidth(0);
         //tb_internetSub.getColumnModel().getColumn(0).setMinWidth(0);
 
-        this.setSize(800,800);
-        this.subscriptionList = subscriptionList;            
-        
-        if (currentPage == 0){
+        this.setSize(800, 800);
+        this.subscriptionList = subscriptionList;
+
+        if (currentPage == 0) {
             bt_back.setVisible(false);
-        }
-        else{
+        } else {
             bt_back.setVisible(true);
         }
         subscriptionTable();
         this.setVisible(true);
     }
-    
-    public void subscriptionInfo(){
-        if (tb_internetSub.getSelectedRow()!=-1){
-             selectedSubscription = subscriptionList.get(dm_tb_internetSub.getValueAt(tb_internetSub.getSelectedRow(), 0));
+
+    public void subscriptionInfo() {
+        if (tb_internetSub.getSelectedRow() != -1) {
+            selectedSubscription = subscriptionList.get(dm_tb_internetSub.getValueAt(tb_internetSub.getSelectedRow(), 0));
         }
     }
-    
-    public void errorSelection(String errorMessage){
-        if (tb_internetSub.getSelectedRow() == -1){
+
+    public void errorSelection(String errorMessage) {
+        if (tb_internetSub.getSelectedRow() == -1) {
             op_Error.showMessageDialog(this, errorMessage);
         }
     }
-    
+
     public V_Subscription(C_internet_subscription controller, java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         this.controller = controller;
         initComponents();
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -90,6 +88,7 @@ public class V_Subscription extends javax.swing.JDialog {
     private void initComponents() {
 
         op_Error = new javax.swing.JOptionPane();
+        op_delete = new javax.swing.JOptionPane();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tb_internetSub = new javax.swing.JTable();
@@ -113,18 +112,18 @@ public class V_Subscription extends javax.swing.JDialog {
 
         jLabel1.setText("Internet subscriptions");
         getContentPane().add(jLabel1);
-        jLabel1.setBounds(190, 10, 122, 17);
+        jLabel1.setBounds(190, 10, 113, 16);
 
         tb_internetSub.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "id", "Subscriber", "Start Date", "End Date", "Active"
+                "Id", "Subscriber", "Start Date", "End Date"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -137,7 +136,6 @@ public class V_Subscription extends javax.swing.JDialog {
             tb_internetSub.getColumnModel().getColumn(1).setResizable(false);
             tb_internetSub.getColumnModel().getColumn(2).setResizable(false);
             tb_internetSub.getColumnModel().getColumn(3).setResizable(false);
-            tb_internetSub.getColumnModel().getColumn(4).setResizable(false);
         }
 
         getContentPane().add(jScrollPane1);
@@ -180,6 +178,11 @@ public class V_Subscription extends javax.swing.JDialog {
         bt_add.setBounds(460, 110, 90, 23);
 
         bt_delete.setText("Delete");
+        bt_delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_deleteActionPerformed(evt);
+            }
+        });
         getContentPane().add(bt_delete);
         bt_delete.setBounds(460, 170, 90, 23);
 
@@ -224,7 +227,7 @@ public class V_Subscription extends javax.swing.JDialog {
     private void bt_nextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_nextActionPerformed
         currentPage++;
         try {
-            controller.subscriptionPage(currentPage*maxPageSize);
+            controller.subscriptionPage(currentPage * maxPageSize);
         } catch (SQLException ex) {
             System.getLogger(V_Subscription.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
@@ -232,12 +235,12 @@ public class V_Subscription extends javax.swing.JDialog {
     }//GEN-LAST:event_bt_nextActionPerformed
 
     private void bt_backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_backActionPerformed
-        currentPage--; 
-            try {
-                controller.subscriptionPage(currentPage*maxPageSize);
-            } catch (SQLException ex) {
-                System.getLogger(V_Subscription.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-            }
+        currentPage--;
+        try {
+            controller.subscriptionPage(currentPage * maxPageSize);
+        } catch (SQLException ex) {
+            System.getLogger(V_Subscription.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }//GEN-LAST:event_bt_backActionPerformed
 
     private void bt_detailsSubActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_detailsSubActionPerformed
@@ -265,6 +268,18 @@ public class V_Subscription extends javax.swing.JDialog {
             System.getLogger(V_Subscription.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }//GEN-LAST:event_bt_modifyActionPerformed
+
+    private void bt_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_deleteActionPerformed
+        subscriptionInfo();
+        try {
+            int answer = op_delete.showConfirmDialog(this, "Are you certain about deleting this user ?");
+            if (answer == op_delete.YES_OPTION) {
+                controller.deleteSubscription(selectedSubscription.getId());
+            }
+        } catch (SQLException ex) {
+            System.getLogger(V_Subscription.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }//GEN-LAST:event_bt_deleteActionPerformed
 
     /**
      * @param args the command line arguments
@@ -316,6 +331,7 @@ public class V_Subscription extends javax.swing.JDialog {
     private javax.swing.JMenuItem mi_close;
     private javax.swing.JMenu mn_file;
     private javax.swing.JOptionPane op_Error;
+    private javax.swing.JOptionPane op_delete;
     private javax.swing.JTable tb_internetSub;
     // End of variables declaration//GEN-END:variables
 }

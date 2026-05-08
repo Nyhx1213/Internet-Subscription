@@ -220,7 +220,7 @@ public class M_User {
     public static M_User connexion_log(Db_mariadb db, String loginIns, String passwordIns) throws SQLException {
         String sql, passwordDB;      
         M_User user;
-        
+
         sql = "Select * FROM mcd_users WHERE email = '"+loginIns+"'";
         ResultSet res;
         res = db.sqlSelect(sql);

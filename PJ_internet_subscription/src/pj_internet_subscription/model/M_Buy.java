@@ -70,13 +70,14 @@ public class M_Buy {
         sql = "SELECT * FROM mcd_buy WHERE id_subscription="+id_subscription+" AND id_product="+id_product+"";
 
         ResultSet res = db.sqlSelect(sql);
-        res.first();
-        this.comment = res.getString("comment");
-        this.price = res.getInt("price");
-        this.quantity = res.getFloat("quantity");
-        this.created_at = res.getObject("created_at", LocalDateTime.class);
-        this.updated_at = res.getObject("updated_at", LocalDateTime.class);
-        res.close();
+        if (res.next()) {
+              this.comment = res.getString("comment");
+              this.price = res.getInt("price");
+              this.quantity = res.getFloat("quantity");
+              this.created_at = res.getObject("created_at", LocalDateTime.class);
+              this.updated_at = res.getObject("updated_at", LocalDateTime.class);
+          }
+          res.close();
     }
 
     public Db_mariadb getDb() {
@@ -204,6 +205,14 @@ public class M_Buy {
             key++;
         }
         return productList;
+    }
+    
+    public static boolean exists (Db_mariadb db, int id_product, int id_subscription) throws SQLException {
+        String sql = "SELECT 1 FROM mcd_buy "
+                + "WHERE id_product = " + id_product + " AND id_subscription = " + id_subscription ;
+        ResultSet res = db.sqlSelect(sql);
+        
+        return res.next();
     }
     
     @Override
