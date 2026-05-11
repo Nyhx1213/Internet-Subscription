@@ -199,11 +199,6 @@ public class V_Main extends javax.swing.JFrame {
 
         mi_rooms.setText("Rooms");
         mi_rooms.setName("mi_rooms"); // NOI18N
-        mi_rooms.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mi_roomsActionPerformed(evt);
-            }
-        });
         mn_parameters.add(mi_rooms);
 
         mi_users.setText("Users");
@@ -250,17 +245,17 @@ public class V_Main extends javax.swing.JFrame {
                                 .addComponent(lb_email)
                                 .addGap(18, 18, 18)
                                 .addComponent(tf_email, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 179, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 179, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(289, 289, 289)
+                                .addComponent(lb_connection))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(276, 276, 276)
+                                .addComponent(bt_connect)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(289, 289, 289)
-                        .addComponent(lb_connection))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(276, 276, 276)
-                        .addComponent(bt_connect)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -320,14 +315,6 @@ public class V_Main extends javax.swing.JFrame {
             System.getLogger(V_Main.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }//GEN-LAST:event_bt_connectActionPerformed
-
-    private void mi_roomsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mi_roomsActionPerformed
-        try {
-            controller.roomPage();
-        } catch (SQLException ex) {
-            System.getLogger(V_Main.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        }
-    }//GEN-LAST:event_mi_roomsActionPerformed
 
     /**
      * @param args the command line arguments

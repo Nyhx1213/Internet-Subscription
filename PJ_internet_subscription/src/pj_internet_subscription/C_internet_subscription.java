@@ -26,7 +26,6 @@ import pj_internet_subscription.model.M_Room;
 import pj_internet_subscription.model.M_Subscription;
 import pj_internet_subscription.model.M_System;
 import pj_internet_subscription.model.M_User;
-import pj_internet_subscription.views.V_Room;
 import pj_internet_subscription.views.V_Subscription;
 import pj_internet_subscription.views.V_SubscriptionAdditions;
 import pj_internet_subscription.views.V_SubscriptionDetail;
@@ -44,7 +43,6 @@ public class C_internet_subscription {
     private LinkedHashMap <Integer, M_User> userList;
     private M_User userSession;
     private V_SubscriptionDetail fm_subscriptionCrud;
-    private V_Room fm_room;
     private V_SubscriptionAdditions fm_subscriptionAdditions;
     
     
@@ -54,7 +52,6 @@ public class C_internet_subscription {
         fm_main = new V_Main(this);
         fm_subscription = new V_Subscription(this, fm_main, true);
         fm_subscriptionCrud = new V_SubscriptionDetail(this, fm_main, true);
-        fm_room = new V_Room(this, fm_main, true);
         fm_subscriptionAdditions = new V_SubscriptionAdditions(this, fm_main, true);
         fm_main.display(userSession, null, null);
     }
@@ -211,10 +208,6 @@ public class C_internet_subscription {
         M_Payment newPayment;
         newPayment = new M_Payment(baseRR, selectedMethod, subscription.getId(), amount, "", localDatePaymentDate);
         subscriptionAdditionsPage("payments", subscription);
-    }
-    
-    public void roomPage() throws SQLException {
-        fm_room.display(M_Room.getRecords(baseRR));
     }
     
     public void roomCrud(String action, M_Room room) throws SQLException{
