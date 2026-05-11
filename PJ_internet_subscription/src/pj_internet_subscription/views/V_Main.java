@@ -157,7 +157,7 @@ public class V_Main extends javax.swing.JFrame {
 
         lb_connection.setText("Connection");
 
-        tf_password.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        tf_password.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
         lb_email.setText("Email : ");
 
@@ -250,16 +250,17 @@ public class V_Main extends javax.swing.JFrame {
                                 .addComponent(lb_email)
                                 .addGap(18, 18, 18)
                                 .addComponent(tf_email, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 177, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 179, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
-                .addGap(289, 289, 289)
-                .addComponent(lb_connection)
-                .addGap(41, 278, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(bt_connect)
-                .addGap(274, 274, 274))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(289, 289, 289)
+                        .addComponent(lb_connection))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(276, 276, 276)
+                        .addComponent(bt_connect)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -276,9 +277,9 @@ public class V_Main extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lb_password)
                     .addComponent(tf_password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(35, 35, 35)
+                .addGap(28, 28, 28)
                 .addComponent(bt_connect)
-                .addContainerGap(110, Short.MAX_VALUE))
+                .addContainerGap(117, Short.MAX_VALUE))
         );
 
         pack();
@@ -291,7 +292,7 @@ public class V_Main extends javax.swing.JFrame {
 
     private void mi_subscriptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mi_subscriptionsActionPerformed
         try {
-            controller.subscriptionPage(0);
+            controller.subscriptionPage();
         } catch (SQLException ex) {
             System.getLogger(V_Main.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
@@ -309,10 +310,10 @@ public class V_Main extends javax.swing.JFrame {
          try {
             controller.connectToSession(tf_email.getText(), tf_password.getText());
             if (userSession == null && errorMessage == null){
-                op_error.showConfirmDialog(this, "Mauvaises informations");
+                op_error.showMessageDialog(this, "User was not found.");
             }
             else if (userSession == null && errorMessage != null) {
-                op_error.showConfirmDialog(this, errorMessage);
+                op_error.showMessageDialog(this, errorMessage);
             }
         } catch (SQLException ex) {  
             

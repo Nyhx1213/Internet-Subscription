@@ -47,6 +47,7 @@ public class C_internet_subscription {
     private V_Room fm_room;
     private V_SubscriptionAdditions fm_subscriptionAdditions;
     
+    
     public C_internet_subscription() throws Exception{ 
         connexion();
         userList = M_User.getRecords(baseRR);
@@ -75,7 +76,7 @@ public class C_internet_subscription {
         fm_main.display(userSession, M_Authorized.getLesAutorisations(baseRR, idRole), errorMessage);
     }
     
-    public void subscriptionPage(int offset) throws SQLException {         
+    public void subscriptionPage() throws SQLException {         
         fm_subscription.display(M_Subscription.getRecords(baseRR), false, null);
     }
     
@@ -92,11 +93,20 @@ public class C_internet_subscription {
         LinkedHashMap<Integer, M_Payment> paymentList = M_Payment.getRecords(baseRR, " id_subscription = "+subscription.getId());
         fm_subscriptionCrud.display(action, subscription, user, roleList, computerList, systemList, antivirusList, outletList, roomList, paymentMethodList, productList, paymentList);
     }
-    
+   
+    /*
+    public void addSubscriptionPage() throws SQLException {
+        LinkedHashMap<Integer, M_User> userList = M_User.getRecords(baseRR);
+        LinkedHashMap<String, M_Room> roomList = M_Room.getRecords(baseRR);
+        LinkedHashMap<String, M_Outlet> outletList = M_Outlet.getRecords(baseRR);
+        fm_subscriptionCrud.displayAdditionFrame(roomList, outletList, userList);
+
+    }
+    */
     public void deleteSubscription (int idSubscription) throws SQLException {
         M_Subscription selectedSubscription = new M_Subscription(baseRR, idSubscription);
         selectedSubscription.delete();
-        subscriptionPage(0);
+        subscriptionPage();
     }
     
     public void updateSubscription(int subscriptionId, String firstName, String lastName, String email, LocalDate dateBegin, LocalDate dateEnd,

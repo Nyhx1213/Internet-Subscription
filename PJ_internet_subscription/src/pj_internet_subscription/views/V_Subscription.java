@@ -24,7 +24,7 @@ public class V_Subscription extends javax.swing.JDialog {
     private C_internet_subscription controller;
     private DefaultTableModel dm_tb_internetSub;
     private LinkedHashMap<Integer, M_Subscription> subscriptionList; // Contains internet subscriptions.
-    private int maxPageSize = 50, currentPage = 0, currentId;
+    private int maxPageSize = 20, currentPage = 0, currentId;
     private M_Subscription selectedSubscription;
 
     /**
@@ -33,16 +33,43 @@ public class V_Subscription extends javax.swing.JDialog {
     private void subscriptionTable() {
         M_Subscription subscription = null;
         dm_tb_internetSub.setRowCount(0);
+        
+        int startIndex = currentPage * maxPageSize;
+        int endIndex = startIndex + maxPageSize;
+        int currentIndex = 0;
+        int addedRows = 0;
+        
         for (int key : subscriptionList.keySet()) {
-            subscription = subscriptionList.get(key);
-            dm_tb_internetSub.addRow(new Object[]{subscription.getId(), subscription.getFirstName() + " " + subscription.getLastName(), subscription.getDate_begin(), subscription.getDate_end()});
+            if (currentIndex >= startIndex && currentIndex < endIndex){
+                subscription = subscriptionList.get(key);
+                dm_tb_internetSub.addRow(new Object[]{subscription.getId(), subscription.getFirstName() + " " + subscription.getLastName(), subscription.getDate_begin(), subscription.getDate_end()});
+                addedRows++;
+            }
+            if (currentIndex >= endIndex ) {
+                break;
+            }
+            currentIndex++;
+        }
+        
+        if (addedRows == 0 && currentPage !=0) {
+            currentPage--;
+            subscriptionTable();
+            bt_next.setVisible(endIndex < subscriptionList.size());
+        }
+        if (currentPage == 0) {
+            bt_back.setVisible(false);
+        } else {
+            bt_back.setVisible(true);
         }
     }
 
-    public void display(LinkedHashMap<Integer, M_Subscription> subscriptionList, Boolean messageExist, String message) {
+    public void display(LinkedHashMap<Integer, M_Subscription> subscriptionList, Boolean messageExist, String message ) {
         if (messageExist) {
             op_Error.showMessageDialog(this, message);
         }
+        
+        bt_next.setVisible(false);
+                
         dm_tb_internetSub = (DefaultTableModel) tb_internetSub.getModel();
         //tb_internetSub.getColumnModel().getColumn(0).setWidth(0);
         //tb_internetSub.getColumnModel().getColumn(0).setMaxWidth(0);
@@ -51,11 +78,6 @@ public class V_Subscription extends javax.swing.JDialog {
         this.setSize(800, 800);
         this.subscriptionList = subscriptionList;
 
-        if (currentPage == 0) {
-            bt_back.setVisible(false);
-        } else {
-            bt_back.setVisible(true);
-        }
         subscriptionTable();
         this.setVisible(true);
     }
@@ -112,7 +134,7 @@ public class V_Subscription extends javax.swing.JDialog {
 
         jLabel1.setText("Internet subscriptions");
         getContentPane().add(jLabel1);
-        jLabel1.setBounds(190, 10, 113, 16);
+        jLabel1.setBounds(190, 10, 260, 16);
 
         tb_internetSub.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -226,21 +248,13 @@ public class V_Subscription extends javax.swing.JDialog {
 
     private void bt_nextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_nextActionPerformed
         currentPage++;
-        try {
-            controller.subscriptionPage(currentPage * maxPageSize);
-        } catch (SQLException ex) {
-            System.getLogger(V_Subscription.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        }
+        subscriptionTable();
 
     }//GEN-LAST:event_bt_nextActionPerformed
 
     private void bt_backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_backActionPerformed
         currentPage--;
-        try {
-            controller.subscriptionPage(currentPage * maxPageSize);
-        } catch (SQLException ex) {
-            System.getLogger(V_Subscription.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        }
+        subscriptionTable();
     }//GEN-LAST:event_bt_backActionPerformed
 
     private void bt_detailsSubActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_detailsSubActionPerformed
