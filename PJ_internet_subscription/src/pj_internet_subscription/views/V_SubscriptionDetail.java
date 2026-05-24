@@ -47,15 +47,26 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
 
     public void updateOutlet(LinkedHashMap<String, M_Outlet> outletList) {
         cb_outlet.removeAllItems();
+        cb_addOutlet.removeAllItems();
         for (String code : outletList.keySet()) {
             M_Outlet outletverification = outletList.get(code);
             cb_outlet.addItem(outletverification.getCode());
+            cb_addOutlet.addItem(outletverification.getCode());
+        }
+    }
+    
+    public void updateUsers(LinkedHashMap<Integer, M_User> userList) {
+        cb_addUser.removeAllItems();
+        for (int key : userList.keySet()) {
+            M_User userVerification = userList.get(key);
+            cb_addUser.addItem(userVerification.getEmail());
         }
     }
 
     public void empty() {
         cb_outlet.removeAllItems();
         cb_room.removeAllItems();
+        cb_addUser.removeAllItems();
     }
 
     public void productTable() {
@@ -97,7 +108,6 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
                 dt_beginDate.setEnabled(false);
                 dt_endDate.setEnabled(false);
                 tf_boxLogin.setEditable(false);
-                tf_boxPassword.setEditable(false);
                 ta_comment.setEditable(false);
                 cb_room.setEnabled(false);
                 cb_outlet.setEnabled(false);
@@ -107,6 +117,7 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
                 bt_products.setVisible(false);
                 bt_computers.setVisible(false);
                 bt_payments.setVisible(false);
+                bt_validerCrud.setVisible(false);
                 break;
             case "modify":
                 tf_userFirstName.setEditable(true);
@@ -114,7 +125,6 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
                 dt_beginDate.setEnabled(true);
                 dt_endDate.setEnabled(true);
                 tf_boxLogin.setEditable(true);
-                tf_boxPassword.setEditable(false);
                 ta_comment.setEditable(true);
                 cb_room.setEnabled(true);
                 cb_outlet.setEnabled(true);
@@ -124,16 +134,17 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
                 bt_products.setVisible(true);
                 bt_computers.setVisible(true);
                 bt_payments.setVisible(true);
+                bt_validerCrud.setVisible(true);
                 break;
         }
     }
 
     public void actionType(String action) {
-        if (action == "add") {
+        if (action.equals("add")) {
             pn_detail.setVisible(false);
-            this.setSize(500, 500);
+            this.setSize(1100, 600);
             pn_add.setVisible(true);
-        } else if (action == "detail") {
+        } else if (action.equals("detail")) {
             pn_detail.setVisible(true);
             pn_add.setVisible(false);
             this.setSize(1100, 800);
@@ -155,6 +166,16 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
 
     }
 */
+    public void displayAddSub(String action, LinkedHashMap<Integer, M_User> userList, LinkedHashMap<String, M_Room> roomList, LinkedHashMap<String, M_Outlet> outletList){
+        empty();
+        actionType("add");
+        updateUsers(userList);
+        for (String code : roomList.keySet()) {
+            cb_addRoom.addItem(roomList.get(code).getCode());
+        }
+        this.setVisible(true);
+    }
+    
     public void display(String action, M_Subscription subscription, M_User user, LinkedHashMap<Integer, M_Role> roleList,
             LinkedHashMap<Integer, M_Computer> computerList, LinkedHashMap<Integer, M_System> systemList,
             LinkedHashMap<Integer, M_Antivirus> antivirusList, LinkedHashMap<String, M_Outlet> outletList,
@@ -185,7 +206,6 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
         dt_endDate.setDate(dateEnd);
         ta_comment.setText(subscription.getComment());
         tf_boxLogin.setText(subscription.getLogin());
-        tf_boxPassword.setText(subscription.getPassword());
         tf_userEmail.setText(user.getEmail());
         cb_active.setSelected(subscription.isActive());
         for (String code : roomList.keySet()) {
@@ -232,6 +252,7 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        op_error = new javax.swing.JOptionPane();
         pn_add = new javax.swing.JPanel();
         lb_addSub = new javax.swing.JLabel();
         lb_email = new javax.swing.JLabel();
@@ -253,6 +274,8 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
         cb_addOutlet = new javax.swing.JComboBox<>();
         jScrollPane5 = new javax.swing.JScrollPane();
         ta_addComment = new javax.swing.JTextArea();
+        lb_filterEmail = new javax.swing.JLabel();
+        tf_filterEmail = new javax.swing.JTextField();
         pn_detail = new javax.swing.JPanel();
         lb_payments = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -276,8 +299,6 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
         jScrollPane3 = new javax.swing.JScrollPane();
         ta_comment = new javax.swing.JTextArea();
         lb_comment = new javax.swing.JLabel();
-        lb_boxPassword = new javax.swing.JLabel();
-        tf_boxPassword = new javax.swing.JTextField();
         lb_boxLogin = new javax.swing.JLabel();
         lb_endDate = new javax.swing.JLabel();
         lb_userEmail = new javax.swing.JLabel();
@@ -296,6 +317,11 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
         mi_close = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
         getContentPane().setLayout(null);
 
         lb_addSub.setText("Add a subscription");
@@ -317,12 +343,36 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
         lb_addComment.setText("Comment : ");
 
         bt_addSub.setText("Validate");
+        bt_addSub.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_addSubActionPerformed(evt);
+            }
+        });
 
         bt_addCancelSub.setText("Cancel");
+        bt_addCancelSub.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_addCancelSubActionPerformed(evt);
+            }
+        });
+
+        cb_addRoom.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cb_addRoomItemStateChanged(evt);
+            }
+        });
 
         ta_addComment.setColumns(20);
         ta_addComment.setRows(5);
         jScrollPane5.setViewportView(ta_addComment);
+
+        lb_filterEmail.setText("Email Filter :");
+
+        tf_filterEmail.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tf_filterEmailKeyReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout pn_addLayout = new javax.swing.GroupLayout(pn_add);
         pn_add.setLayout(pn_addLayout);
@@ -339,7 +389,8 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
                             .addComponent(lb_addBoxLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lb_addBoxPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lb_addOutlet, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lb_addRoom, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(lb_addRoom, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lb_filterEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(26, 26, 26)
                         .addGroup(pn_addLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(cb_addUser, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -348,10 +399,11 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
                             .addComponent(tf_addBoxLogin)
                             .addComponent(tf_addBoxPassword)
                             .addComponent(cb_addRoom, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(cb_addOutlet, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(cb_addOutlet, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(tf_filterEmail))
                         .addGap(91, 91, 91)
                         .addComponent(lb_addComment, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(41, 41, 41)
+                        .addGap(151, 151, 151)
                         .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(pn_addLayout.createSequentialGroup()
                         .addGap(326, 326, 326)
@@ -361,15 +413,20 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
                     .addGroup(pn_addLayout.createSequentialGroup()
                         .addGap(389, 389, 389)
                         .addComponent(lb_addSub, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(81, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pn_addLayout.setVerticalGroup(
             pn_addLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pn_addLayout.createSequentialGroup()
                 .addGap(24, 24, 24)
                 .addComponent(lb_addSub)
-                .addGap(37, 37, 37)
+                .addGap(9, 9, 9)
+                .addGroup(pn_addLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(lb_filterEmail)
+                    .addComponent(tf_filterEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pn_addLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(pn_addLayout.createSequentialGroup()
                         .addGroup(pn_addLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(pn_addLayout.createSequentialGroup()
@@ -383,16 +440,15 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
                         .addGap(27, 27, 27)
                         .addGroup(pn_addLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(dc_addEndDate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lb_addEndDate, javax.swing.GroupLayout.Alignment.TRAILING)))
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(10, 10, 10)
-                .addGroup(pn_addLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lb_addBoxLogin)
-                    .addComponent(tf_addBoxLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(24, 24, 24)
-                .addGroup(pn_addLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lb_addBoxPassword)
-                    .addComponent(tf_addBoxPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(lb_addEndDate, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addGap(27, 27, 27)
+                        .addGroup(pn_addLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lb_addBoxLogin)
+                            .addComponent(tf_addBoxLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(24, 24, 24)
+                        .addGroup(pn_addLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lb_addBoxPassword)
+                            .addComponent(tf_addBoxPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(27, 27, 27)
                 .addGroup(pn_addLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lb_addRoom)
@@ -433,6 +489,7 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
                 return canEdit [columnIndex];
             }
         });
+        tb_payments.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(tb_payments);
         if (tb_payments.getColumnModel().getColumnCount() > 0) {
             tb_payments.getColumnModel().getColumn(0).setResizable(false);
@@ -473,6 +530,7 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
                 return canEdit [columnIndex];
             }
         });
+        tb_computers.getTableHeader().setReorderingAllowed(false);
         jScrollPane4.setViewportView(tb_computers);
         if (tb_computers.getColumnModel().getColumnCount() > 0) {
             tb_computers.getColumnModel().getColumn(0).setResizable(false);
@@ -503,6 +561,11 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
         pn_detail.add(cb_room);
         cb_room.setBounds(444, 119, 178, 22);
 
+        cb_outlet.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cb_outletActionPerformed(evt);
+            }
+        });
         pn_detail.add(cb_outlet);
         cb_outlet.setBounds(444, 159, 178, 22);
 
@@ -530,6 +593,7 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
                 return canEdit [columnIndex];
             }
         });
+        tb_products.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tb_products);
         if (tb_products.getColumnModel().getColumnCount() > 0) {
             tb_products.getColumnModel().getColumn(0).setResizable(false);
@@ -582,12 +646,6 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
         lb_comment.setText("Comment : ");
         pn_detail.add(lb_comment);
         lb_comment.setBounds(61, 479, 70, 16);
-
-        lb_boxPassword.setText("Box password : ");
-        pn_detail.add(lb_boxPassword);
-        lb_boxPassword.setBounds(40, 429, 100, 16);
-        pn_detail.add(tf_boxPassword);
-        tf_boxPassword.setBounds(138, 426, 225, 22);
 
         lb_boxLogin.setText("Box login :");
         pn_detail.add(lb_boxLogin);
@@ -726,6 +784,69 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_tf_boxLoginActionPerformed
 
+    private void cb_outletActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cb_outletActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cb_outletActionPerformed
+
+    private void cb_addRoomItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cb_addRoomItemStateChanged
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            Object selected = cb_addRoom.getSelectedItem();
+            if (selected != null) {  // <-- Add this null check
+                try {
+                    controller.updateOutletListByRoom(selected.toString());
+                } catch (SQLException ex) {
+                    System.getLogger(V_SubscriptionDetail.class.getName()).log(System.Logger.Level.ERROR, "Failed to update outlet list", ex);
+                }
+            }
+        }    }//GEN-LAST:event_cb_addRoomItemStateChanged
+
+    private void tf_filterEmailKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tf_filterEmailKeyReleased
+        String selected = tf_filterEmail.getText();
+            try {
+                controller.updateEmailByInput(selected);
+            } catch (SQLException ex) {
+                System.getLogger(V_SubscriptionDetail.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+    }//GEN-LAST:event_tf_filterEmailKeyReleased
+
+    private void bt_addCancelSubActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_addCancelSubActionPerformed
+        try {
+            controller.subscriptionPage();
+        } catch (SQLException ex) {
+            System.getLogger(V_SubscriptionDetail.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }//GEN-LAST:event_bt_addCancelSubActionPerformed
+
+    private void bt_addSubActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_addSubActionPerformed
+        String email = String.valueOf(cb_addUser.getSelectedItem());
+        Date beginDate = dc_addBeginDate.getDate();
+        Date endDate = dc_addEndDate.getDate();
+        String boxLogin = tf_addBoxLogin.getText();
+        String passwordLogin = tf_addBoxPassword.getText();
+        String comment = ta_addComment.getText();
+        String room = String.valueOf(cb_addRoom.getSelectedItem());
+        String outlet = String.valueOf(cb_addOutlet.getSelectedItem());
+        
+        if (email.equals("") || beginDate == null || endDate == null || boxLogin.equals("") || passwordLogin.equals("") || 
+                outlet.equals("")){
+            op_error.showMessageDialog(this, "Please fill in all of the information.");
+        } else {
+            try {
+                controller.addSubscription(email, beginDate, endDate, boxLogin, passwordLogin, comment, outlet);
+            } catch (SQLException ex) {
+                System.getLogger(V_SubscriptionDetail.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+        }
+    }//GEN-LAST:event_bt_addSubActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            controller.subscriptionPage();
+        } catch (SQLException ex) {
+            System.getLogger(V_SubscriptionDetail.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }//GEN-LAST:event_formWindowClosing
+
     /**
      * @param args the command line arguments
      */
@@ -798,11 +919,11 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
     private javax.swing.JLabel lb_addSub;
     private javax.swing.JLabel lb_beginDate;
     private javax.swing.JLabel lb_boxLogin;
-    private javax.swing.JLabel lb_boxPassword;
     private javax.swing.JLabel lb_comment;
     private javax.swing.JLabel lb_crud;
     private javax.swing.JLabel lb_email;
     private javax.swing.JLabel lb_endDate;
+    private javax.swing.JLabel lb_filterEmail;
     private javax.swing.JLabel lb_outlet;
     private javax.swing.JLabel lb_payments;
     private javax.swing.JLabel lb_products;
@@ -812,6 +933,7 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
     private javax.swing.JMenuBar mb_menu;
     private javax.swing.JMenuItem mi_close;
     private javax.swing.JMenu mn_file;
+    private javax.swing.JOptionPane op_error;
     private javax.swing.JPanel pn_add;
     private javax.swing.JPanel pn_detail;
     private javax.swing.JTextArea ta_addComment;
@@ -822,7 +944,7 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
     private javax.swing.JTextField tf_addBoxLogin;
     private javax.swing.JTextField tf_addBoxPassword;
     private javax.swing.JTextField tf_boxLogin;
-    private javax.swing.JTextField tf_boxPassword;
+    private javax.swing.JTextField tf_filterEmail;
     private javax.swing.JTextField tf_userEmail;
     private javax.swing.JTextField tf_userFirstName;
     private javax.swing.JTextField tf_userLastName;

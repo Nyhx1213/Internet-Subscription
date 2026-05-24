@@ -51,6 +51,8 @@ public class V_Subscription extends javax.swing.JDialog {
             currentIndex++;
         }
         
+        bt_next.setVisible(endIndex < subscriptionList.size());
+        bt_back.setVisible(currentPage > 0);
         if (addedRows == 0 && currentPage !=0) {
             currentPage--;
             subscriptionTable();
@@ -88,10 +90,12 @@ public class V_Subscription extends javax.swing.JDialog {
         }
     }
 
-    public void errorSelection(String errorMessage) {
+    public boolean errorSelection(String errorMessage) {
         if (tb_internetSub.getSelectedRow() == -1) {
             op_Error.showMessageDialog(this, errorMessage);
+            return false;
         }
+        return true;
     }
 
     public V_Subscription(C_internet_subscription controller, java.awt.Frame parent, boolean modal) {
@@ -152,6 +156,7 @@ public class V_Subscription extends javax.swing.JDialog {
                 return canEdit [columnIndex];
             }
         });
+        tb_internetSub.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tb_internetSub);
         if (tb_internetSub.getColumnModel().getColumnCount() > 0) {
             tb_internetSub.getColumnModel().getColumn(0).setResizable(false);
@@ -259,32 +264,39 @@ public class V_Subscription extends javax.swing.JDialog {
 
     private void bt_detailsSubActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_detailsSubActionPerformed
         subscriptionInfo();
-        errorSelection("Please select a subscription.");
-        try {
-            selectedSubscription.toString();
-            controller.subscriptionCrud("detail", selectedSubscription);
-        } catch (SQLException ex) {
-            System.getLogger(V_Subscription.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        if (errorSelection("Please select a user.")){
+            try {
+                controller.subscriptionCrud("detail", selectedSubscription);
+            } catch (SQLException ex) {
+                System.getLogger(V_Subscription.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
         }
     }//GEN-LAST:event_bt_detailsSubActionPerformed
 
     private void bt_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_addActionPerformed
-        // TODO add your handling code here:
+        try {
+            controller.subscriptionCrud("add", null);
+            //addSubscription is the name you don't have a choice
+        } catch (SQLException ex) {
+            System.getLogger(V_Subscription.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }//GEN-LAST:event_bt_addActionPerformed
 
     private void bt_modifyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_modifyActionPerformed
         subscriptionInfo();
-        errorSelection("Please select a user.");
-        try {
-            selectedSubscription.toString();
-            controller.subscriptionCrud("modify", selectedSubscription);
-        } catch (SQLException ex) {
-            System.getLogger(V_Subscription.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        if (errorSelection("Please select a user.")){
+            try {
+                selectedSubscription.toString();
+                controller.subscriptionCrud("modify", selectedSubscription);
+            } catch (SQLException ex) {
+                System.getLogger(V_Subscription.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
         }
     }//GEN-LAST:event_bt_modifyActionPerformed
 
     private void bt_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_deleteActionPerformed
         subscriptionInfo();
+    if (errorSelection("Please select a user.")){
         try {
             int answer = op_delete.showConfirmDialog(this, "Are you certain about deleting this user ?");
             if (answer == op_delete.YES_OPTION) {
@@ -293,6 +305,7 @@ public class V_Subscription extends javax.swing.JDialog {
         } catch (SQLException ex) {
             System.getLogger(V_Subscription.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
+    }
     }//GEN-LAST:event_bt_deleteActionPerformed
 
     /**

@@ -82,6 +82,27 @@ public class M_User {
         this.updated_at = res.getObject("updated_at", LocalDateTime.class);
         res.close();
     }
+    
+    public M_User (Db_mariadb db, String email) throws SQLException {
+        this.db = db;
+        this.email = email;
+        
+        String sql;
+        sql = "SELECT * FROM mcd_users WHERE email='"+email+"'";
+        
+        ResultSet res = db.sqlSelect(sql);
+        res.first();
+        this.first_name = res.getString("first_name");
+        this.last_name = res.getString("last_name");
+        this.name = res.getString("name");
+        this.id = res.getInt("id");
+        this.password = res.getString("password");
+        this.comment = res.getString("comment");
+        this.id_role = res.getInt("id_role");
+        this.created_at = res.getObject("created_at", LocalDateTime.class);
+        this.updated_at = res.getObject("updated_at", LocalDateTime.class);
+        res.close();
+    }
 
     public Db_mariadb getDb() {
         return db;

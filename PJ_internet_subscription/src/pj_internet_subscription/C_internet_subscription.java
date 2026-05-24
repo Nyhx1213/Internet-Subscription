@@ -78,17 +78,32 @@ public class C_internet_subscription {
     }
     
     public void subscriptionCrud(String action, M_Subscription subscription) throws SQLException{
-        M_User user = new M_User(baseRR, subscription.getId_user());
         LinkedHashMap<String, M_Outlet> outletList = M_Outlet.getRecords(baseRR);
         LinkedHashMap<String, M_Room> roomList = M_Room.getRecords(baseRR);
-        LinkedHashMap<Integer, M_Role> roleList = M_Role.getRecords(baseRR);
-        LinkedHashMap<Integer, M_Computer> computerList = M_Computer.getRecords(baseRR, "id_subscription = "+subscription.getId());
-        LinkedHashMap<Integer, M_System> systemList = M_System.getRecords(baseRR);
-        LinkedHashMap<Integer, M_Antivirus> antivirusList = M_Antivirus.getRecords(baseRR);
-        LinkedHashMap<Integer, M_Method> paymentMethodList = M_Method.getRecords(baseRR);
-        LinkedHashMap<Integer, M_Product> productList = M_Buy.getRecords(baseRR, "bu.id_subscription = "+subscription.getId());
-        LinkedHashMap<Integer, M_Payment> paymentList = M_Payment.getRecords(baseRR, " id_subscription = "+subscription.getId());
-        fm_subscriptionCrud.display(action, subscription, user, roleList, computerList, systemList, antivirusList, outletList, roomList, paymentMethodList, productList, paymentList);
+        if (subscription != null) {
+            M_User user = new M_User(baseRR, subscription.getId_user());
+            LinkedHashMap<Integer, M_Role> roleList = M_Role.getRecords(baseRR);
+            LinkedHashMap<Integer, M_Computer> computerList = M_Computer.getRecords(baseRR, "id_subscription = "+subscription.getId());
+            LinkedHashMap<Integer, M_System> systemList = M_System.getRecords(baseRR);
+            LinkedHashMap<Integer, M_Antivirus> antivirusList = M_Antivirus.getRecords(baseRR);
+            LinkedHashMap<Integer, M_Method> paymentMethodList = M_Method.getRecords(baseRR);
+            LinkedHashMap<Integer, M_Product> productList = M_Buy.getRecords(baseRR, "bu.id_subscription = "+subscription.getId());
+            LinkedHashMap<Integer, M_Payment> paymentList = M_Payment.getRecords(baseRR, " id_subscription = "+subscription.getId());
+            fm_subscriptionCrud.display(action, subscription, user, roleList, computerList, systemList, antivirusList, outletList, roomList, paymentMethodList, productList, paymentList);
+        } else {
+            LinkedHashMap<Integer, M_User> userList = M_User.getRecords(baseRR);
+            fm_subscriptionCrud.displayAddSub(action, userList, roomList, outletList);
+        }
+        
+    }
+    
+    public void addSubscription (String email, Date beginDate, Date endDate, String boxLogin, String passwordLogin, 
+        String comment, String outlet) throws SQLException {
+        M_User user = new M_User(baseRR, email);
+        LocalDate localDateBegin = M_Subscription.convertToLocalDateViaInstant(beginDate);
+        LocalDate localDateEnd = M_Subscription.convertToLocalDateViaInstant(endDate);
+        M_Subscription newSub = new M_Subscription(baseRR, user.getId(), boxLogin, passwordLogin, comment, outlet, localDateBegin, localDateEnd);
+        subscriptionCrud("modify", newSub);
     }
    
     /*
@@ -144,6 +159,10 @@ public class C_internet_subscription {
     
     public void updateOutletListByRoom (String roomCode) throws SQLException {
         fm_subscriptionCrud.updateOutlet(M_Outlet.getRecords(baseRR, "code_room = '" + roomCode + "'"));
+    }
+    
+    public void updateEmailByInput(String input) throws SQLException {
+        fm_subscriptionCrud.updateUsers(M_User.getRecords(baseRR, "email LIKE '%" + input + "%'"));
     }
     
     public void deleteProductFromSub(int productId, M_Subscription subscription) throws SQLException{

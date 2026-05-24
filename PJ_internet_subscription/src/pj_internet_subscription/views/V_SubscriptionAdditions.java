@@ -239,6 +239,7 @@ public class V_SubscriptionAdditions extends javax.swing.JDialog {
                 return canEdit [columnIndex];
             }
         });
+        tb_products.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tb_products);
         if (tb_products.getColumnModel().getColumnCount() > 0) {
             tb_products.getColumnModel().getColumn(0).setResizable(false);
@@ -326,6 +327,7 @@ public class V_SubscriptionAdditions extends javax.swing.JDialog {
                 return canEdit [columnIndex];
             }
         });
+        tb_payments.getTableHeader().setReorderingAllowed(false);
         jScrollPane3.setViewportView(tb_payments);
         if (tb_payments.getColumnModel().getColumnCount() > 0) {
             tb_payments.getColumnModel().getColumn(0).setResizable(false);
@@ -445,6 +447,7 @@ public class V_SubscriptionAdditions extends javax.swing.JDialog {
                 return canEdit [columnIndex];
             }
         });
+        tb_computers.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(tb_computers);
         if (tb_computers.getColumnModel().getColumnCount() > 0) {
             tb_computers.getColumnModel().getColumn(1).setResizable(false);

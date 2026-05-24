@@ -4,6 +4,7 @@
  */
 package pj_internet_subscription.model;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -50,7 +51,7 @@ public class M_Subscription {
         this.db = db;
         this.id_user = id_user;
         this.login = login;
-        this.password = password;
+        this.password = BCrypt.withDefaults().hashToString(12, password.toCharArray());
         this.comment = comment; 
         this.code_outlet = code_outlet;
         this.date_begin = date_begin;
@@ -58,7 +59,7 @@ public class M_Subscription {
 
         String sql;
         sql = "INSERT INTO mcd_subscriptions (id_user, login, password, comment, code_outlet, date_begin, date_end) "
-                + "Values("+id_user+", '"+login+"', '"+password+"', '"+comment+"', '"+code_outlet+"', '"+date_begin+"', '"+date_end+"'  );";
+                + "Values("+id_user+", '"+login+"', '"+this.password+"', '"+comment+"', '"+code_outlet+"', '"+date_begin+"', '"+date_end+"'  );";
         db.sqlExec(sql);
         ResultSet res;
         res=db.sqlLastId();
