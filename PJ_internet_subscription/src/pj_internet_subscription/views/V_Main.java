@@ -130,11 +130,11 @@ public class V_Main extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         tf_email = new javax.swing.JTextField();
         lb_connection = new javax.swing.JLabel();
-        tf_password = new javax.swing.JTextField();
         lb_email = new javax.swing.JLabel();
         lb_password = new javax.swing.JLabel();
         bt_connect = new javax.swing.JButton();
         lb_session = new javax.swing.JLabel();
+        tf_password = new javax.swing.JPasswordField();
         mb_menu = new javax.swing.JMenuBar();
         mn_file = new javax.swing.JMenu();
         mi_disconnect = new javax.swing.JMenuItem();
@@ -156,8 +156,6 @@ public class V_Main extends javax.swing.JFrame {
         });
 
         lb_connection.setText("Connection");
-
-        tf_password.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
         lb_email.setText("Email : ");
 
@@ -360,6 +358,6 @@ public class V_Main extends javax.swing.JFrame {
     private javax.swing.JMenu mn_parameters;
     private javax.swing.JOptionPane op_error;
     private javax.swing.JTextField tf_email;
-    private javax.swing.JTextField tf_password;
+    private javax.swing.JPasswordField tf_password;
     // End of variables declaration//GEN-END:variables
 }

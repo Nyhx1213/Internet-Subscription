@@ -122,13 +122,14 @@ public class C_internet_subscription {
     }
     
     public void updateSubscription(int subscriptionId, String firstName, String lastName, String email, LocalDate dateBegin, LocalDate dateEnd,
-            String boxLogin, String comment, String roomCode, String outletCode) throws SQLException
+            String boxLogin, String comment, String outletCode) throws SQLException
     {
         M_Subscription subscription = new M_Subscription(baseRR, subscriptionId);
         M_User user = new M_User(baseRR, subscription.getId_user());
         user.setFirst_name(firstName);
         user.setLast_name(lastName);
         user.setEmail(email);
+        subscription.setCode_outlet(outletCode);
         subscription.setDate_begin(dateBegin);
         subscription.setDate_end(dateEnd);
         subscription.setLogin(boxLogin);

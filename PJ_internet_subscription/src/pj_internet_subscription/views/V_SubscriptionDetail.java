@@ -181,7 +181,7 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
             LinkedHashMap<Integer, M_Antivirus> antivirusList, LinkedHashMap<String, M_Outlet> outletList,
             LinkedHashMap<String, M_Room> roomList, LinkedHashMap<Integer, M_Method> paymentMethodList,
             LinkedHashMap<Integer, M_Product> productList, LinkedHashMap<Integer, M_Payment> paymentList) {
-        empty();
+        empty();    
         actionType("detail");
         this.subscriptionId = subscription.getId();
         this.subscription = subscription;
@@ -722,16 +722,21 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
     }//GEN-LAST:event_mi_closeActionPerformed
 
     private void bt_validerCrudActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_validerCrudActionPerformed
-        LocalDate dateBegin = M_Subscription.convertToLocalDateViaInstant(dt_beginDate.getDate());
-        LocalDate dateEnd = M_Subscription.convertToLocalDateViaInstant(dt_endDate.getDate());
-        try {
-            controller.updateSubscription(subscriptionId, tf_userFirstName.getText(), tf_userLastName.getText(), tf_userEmail.getText(),
-                    dateBegin, dateEnd, tf_boxLogin.getText(), ta_comment.getText(), cb_outlet.getSelectedItem().toString(),
-                    cb_room.getSelectedItem().toString());
-        } catch (SQLException ex) {
-            System.getLogger(V_SubscriptionDetail.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        if (dt_beginDate.getDate() == null || dt_endDate.getDate() == null) {
+            op_error.showMessageDialog(this, "Please enter a valid date.");
+        } else {
+            
+            LocalDate dateBegin = M_Subscription.convertToLocalDateViaInstant(dt_beginDate.getDate());
+            LocalDate dateEnd = M_Subscription.convertToLocalDateViaInstant(dt_endDate.getDate());
+            try {
+                controller.updateSubscription(subscriptionId, tf_userFirstName.getText(), tf_userLastName.getText(), tf_userEmail.getText(),
+                        dateBegin, dateEnd, tf_boxLogin.getText(), ta_comment.getText(), cb_outlet.getSelectedItem().toString()
+                       );
+            } catch (SQLException ex) {
+                System.getLogger(V_SubscriptionDetail.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+            this.setVisible(false);
         }
-        this.setVisible(false);
     }//GEN-LAST:event_bt_validerCrudActionPerformed
 
     private void bt_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_cancelActionPerformed
@@ -812,6 +817,7 @@ public class V_SubscriptionDetail extends javax.swing.JDialog {
     private void bt_addCancelSubActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_addCancelSubActionPerformed
         try {
             controller.subscriptionPage();
+            this.setVisible(false);
         } catch (SQLException ex) {
             System.getLogger(V_SubscriptionDetail.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
