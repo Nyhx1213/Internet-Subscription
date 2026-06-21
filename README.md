@@ -1,3 +1,13 @@
+## Installation 
+
+Clone the deployed branch of the project : 
+`git clone -b deployed https://github.com/Nyhx1213/Internet-Subscription.git` ;
+
+Add your database credentials to the config file. 
+
+run the following command : 
+`java -jar PJ_internet_subscription.jar`
+
 ## Introduction
 
 This software will allow an adminisrator to administer and manage internet subscriptions in the residence of "La futaie". The software will be developed with Java using the MVC architecture.
