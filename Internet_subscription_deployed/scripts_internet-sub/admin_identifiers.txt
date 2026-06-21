@@ -1,0 +1,2 @@
+user : administrationemail@example.com
+password : Iz8i7{9479jW
